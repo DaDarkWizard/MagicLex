@@ -1,0 +1,12 @@
+﻿%usings
+%{
+	using LanguageProcessing.Parser.Types;
+%}
+
+%begin
+
+[int] : { return Types.INT; }
+["()"]
+[([a-zA-Z])([a-zA-Z0-9])*]
+
+%end

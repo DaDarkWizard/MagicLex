@@ -1,0 +1,22 @@
+﻿int main
+
+#on board
+(define (addxn x n)
+  (if (eq? n 1) x
+   (+ x (addxn x (- n 1)))
+  )
+)
+
+#1
+(define (getn n e)
+  (if (eq? n 1) (car e)
+    (getn n (cdr e))
+  )
+)
+
+#2
+(define (addl a b)
+  (if (eq? a (list (car a))) (cons cdr)
+    ()
+  )
+)
