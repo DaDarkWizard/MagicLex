@@ -1,4 +1,5 @@
 ﻿using LanguageProcessing.Expression;
+using Newtonsoft.Json;
 using System;
 
 namespace LanguageProcessing
@@ -7,8 +8,10 @@ namespace LanguageProcessing
     {
         static void Main(string[] args)
         {
-            var dfa = DFA.FromString(@"([a-zA-Z])([a-zA-Z0-9]*)");
-            Console.WriteLine(dfa.Parse("f9*"));
+            var dfa = DFA.FromString(@"([a-zA-Z])*");
+            dfa.Minimize();
+            Console.WriteLine(dfa.Parse("a"));
+            Console.WriteLine(JsonConvert.SerializeObject(dfa));
         }
     }
 }

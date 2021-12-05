@@ -6,29 +6,49 @@ namespace LanguageProcessing.Expression
 {
     public class NFA
     {
+        /// <summary>
+        /// First node in this NFA.
+        /// </summary>
         public Node First;
+
+        /// <summary>
+        /// Last node in this NFA.
+        /// </summary>
         public Node Last;
 
+        /// <summary>
+        /// Construct an NFA from a regex.
+        /// </summary>
+        /// <param name="regex">Regex to construct it from.</param>
+        /// <returns>A constructed NFA.</returns>
         public static NFA FromRegex(Regex regex)
         {
             return FromString(regex.Expression);
         }
 
+        /// <summary>
+        /// Construct an NFA from the string in a regex.
+        /// </summary>
+        /// <param name="regex">The string from the regex to use.</param>
+        /// <returns>A constructed NFA.</returns>
         private static NFA FromString(string regex)
         {
+            // Current state of NFA building.
             NFA? current = null;
+
+            // Iterate over the string.
             for(int i = 0; i < regex.Length; i++)
             {
                 switch (regex[i])
                 {
-                    case '*':
+                    case '*':       // Take the Kuene Star of the NFA.
                         if(current is null)
                         {
                             throw new Exception("Invalid regex!");
                         }
                         current = current.Star();
                         break;
-                    case '(':
+                    case '(':       // Recursively parse what's inside the parentheses.
                         {
                             int x;
                             int count = 1;
@@ -62,7 +82,7 @@ namespace LanguageProcessing.Expression
                             i = x;
                             break;
                         }
-                    case '|':
+                    case '|':   // Generate Or.
                         {
                             if(current is null)
                             {
@@ -70,7 +90,7 @@ namespace LanguageProcessing.Expression
                             }
                             string next = regex.Substring(i + 1);
                             current = current.Or(FromString(next));
-                            i++;
+                            i = regex.Length - 1;
                             break;
                         }
                     case '%':

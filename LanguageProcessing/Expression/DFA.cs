@@ -358,5 +358,124 @@ namespace LanguageProcessing.Expression
             FailState,
             SuccessState
         }
+
+        public void Minimize()
+        {
+            // Minimize using standard algorithm.
+            var t = new HashSet<HashSet<Node>>();
+            HashSet<HashSet<Node>> p;
+            t.Add(nodes.Where(x => x.IsSuccess).ToHashSet());
+            t.Add(nodes.Where(x => !x.IsSuccess).ToHashSet());
+            do
+            {
+                p = t;
+                t = new HashSet<HashSet<Node>>();
+                foreach(var set in p)
+                {
+                    HashSet<Node> newSet = new HashSet<Node>(set);
+                    foreach(var s in t)
+                    {
+                        newSet.ExceptWith(s);
+                    }
+                    while(newSet.Count > 0)
+                    {
+                        Dictionary<Transition, HashSet<Node>> trans = new Dictionary<Transition, HashSet<Node>>();
+                        HashSet<Node> finalSet = new HashSet<Node>();
+                        Node initial = newSet.First();
+                        newSet.Remove(initial);
+                        finalSet.Add(initial);
+                        foreach(Transition tran in initial.Transitions)
+                        {
+                            foreach(var tranSet in p)
+                            {
+                                if (tranSet.Contains(tran.NextNode))
+                                {
+                                    trans.Add(tran, tranSet);
+                                    break;
+                                }
+                            }
+                        }
+                        foreach(var node in newSet)
+                        {
+                            if(TransitionsMatch(node.Transitions, trans))
+                            {
+                                finalSet.Add(node);
+                            }
+                        }
+                        newSet.ExceptWith(finalSet);
+                        t.Add(finalSet);
+                    }
+                }
+            }
+            while (!(t.Count() == p.Count()));
+
+            // Link nodes to their set.
+            Dictionary<Node, HashSet<Node>> tranToSet = new Dictionary<Node, HashSet<Node>>();
+            foreach(var node in nodes)
+            {
+                tranToSet.Add(node, t.Single(x => x.Contains(node)));
+            }
+            // Create nodes for each set.
+            Dictionary<HashSet<Node>, Node> setToNode = new Dictionary<HashSet<Node>, Node>();
+            foreach(var set in t)
+            {
+                setToNode.Add(set, new Node());
+                setToNode[set].IsSuccess = set.First().IsSuccess;
+            }
+            // Link transitions for each of the new nodes.
+            foreach(var set in t)
+            {
+                foreach(var tran in set.First().Transitions)
+                {
+                    Transition newTran = new Transition(tran.TransitionType, setToNode[tranToSet[tran.NextNode]]);
+                    newTran.Character = tran.Character;
+                    newTran.Character2 = tran.Character2;
+                    setToNode[set].Transitions.Add(newTran);
+                }
+            }
+            // Set the class variables.
+            First = setToNode[t.Single(x => x.Contains(First))];
+            this.current = First;
+            List<Node> newList = new List<Node>();
+            foreach(var set in t)
+            {
+                newList.Add(setToNode[set]);
+            }
+            newList.Remove(First);
+            newList = newList.Prepend(First).ToList();
+            this.nodes = newList;
+            for(int i = 0; i < nodes.Count; i++)
+            {
+                nodes[i].Id = i+1;
+            }
+        }
+
+        private bool TransitionsMatch(IEnumerable<Transition> transA, Dictionary<Transition, HashSet<Node>> dictB)
+        {
+            // Check that there are the same number of transitions.
+            if(dictB.Keys.Count != transA.Count())
+            {
+                return false;
+            }
+
+            // Check that the transitions match.
+            foreach (var key in dictB.Keys)
+            {
+                Transition? match = transA.Where(x => x.TransitionType == key.TransitionType &&
+                                                      x.Character == key.Character &&
+                                                      x.Character2 == key.Character2).FirstOrDefault();
+                if(match is null)
+                {
+                    return false;
+                }
+                if (!dictB[key].Contains(match.NextNode))
+                {
+                    return false;
+                }
+            }
+
+            // All cases passed, return true.
+            return true;
+        }
     }
 }
