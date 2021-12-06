@@ -80,11 +80,11 @@ namespace LanguageProcessing.Expression
                                     break;
                                 // Escaped bracket.
                                 case '[':
-                                    builder.Append("[");
+                                    builder.Append("\\[");
                                     break;
                                 // Escaped bracket.
                                 case ']':
-                                    builder.Append("]");
+                                    builder.Append("\\]");
                                     break;
                                 // Unknown escape character.
                                 default:

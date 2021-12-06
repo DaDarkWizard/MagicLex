@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LanguageProcessing": {
+      "commandName": "Project",
+      "commandLineArgs": "Test/Lexer.txt"
+    }
+  }
+}

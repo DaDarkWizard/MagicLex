@@ -254,7 +254,7 @@ namespace LanguageProcessing.Expression
                             if(node.Transitions[j].TransitionType == TransitionType.Range)
                             {
                                 if((int)node.Transitions[i].Character!.Value >= (int)node.Transitions[j]!.Character!.Value &&
-                                   (int)node.Transitions[j].Character!.Value <= (int)node.Transitions[j]!.Character2!.Value)
+                                   (int)node.Transitions[i].Character!.Value <= (int)node.Transitions[j]!.Character2!.Value)
                                 {
                                     if(node.Transitions[i].NextNode != node.Transitions[j].NextNode)
                                     {
@@ -269,6 +269,13 @@ namespace LanguageProcessing.Expression
                     }
                 }
             }
+        }
+
+        public DFA()
+        {
+            First = null!;
+            current = null!;
+            nodes = new List<Node>();
         }
 
         public void Reset()
@@ -476,6 +483,115 @@ namespace LanguageProcessing.Expression
 
             // All cases passed, return true.
             return true;
+        }
+
+        public string Encode()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append('[');
+            for(int i = 0; i < nodes.Count; i++)
+            {
+                builder.Append(nodes[i].Id.ToString());
+                builder.Append(':');
+                builder.Append(nodes[i].IsSuccess ? 't' : 'f');
+            }
+
+            builder.Append("][");
+            foreach(var node in nodes)
+            {
+                builder.Append(node.Id);
+                builder.Append(":[");
+                foreach(var transition in node.Transitions)
+                {
+                    builder.Append("{");
+                    if(transition.TransitionType == TransitionType.Any)
+                    {
+                        builder.Append("0:");
+                        builder.Append(transition.NextNode.Id);
+                    }
+                    else if(transition.TransitionType == TransitionType.Character)
+                    {
+                        builder.Append("1:");
+                        builder.Append(transition.NextNode.Id);
+                        builder.Append(":");
+                        builder.Append(transition.Character);
+                    }
+                    else
+                    {
+                        builder.Append("2:");
+                        builder.Append(transition.NextNode.Id);
+                        builder.Append(":");
+                        builder.Append(transition.Character);
+                        builder.Append(transition.Character2);
+                    }
+                    builder.Append("}");
+                }
+                builder.Append("]");
+            }
+
+            return builder.ToString();
+        }
+
+        public void Decode(string input)
+        {
+            int i = 1;
+            nodes = new List<Node>();
+            while(input[i] != ']')
+            {
+                Node node = new Node();
+                StringBuilder number = new StringBuilder();
+                while(input[i] != ':')
+                {
+                    number.Append(input[i]);
+                    i++;
+                }
+                node.Id = int.Parse(number.ToString());
+                i++;
+                node.IsSuccess = (input[i] == 't');
+                i++;
+                nodes.Add(node);
+            }
+            i+=2;
+            while(input[i] != ']')
+            {
+                StringBuilder number = new StringBuilder();
+                while(input[i] != ':')
+                {
+                    number.Append(input[i]);
+                    i++;
+                }
+                Node n = nodes[int.Parse(number.ToString())];
+                i+=2;
+                while (input[i] != ']')
+                {
+                    i++;
+                    
+                    i++;
+                    TransitionType t;
+                    char? one;
+                    char? two;
+                    if(input[i] == '0')
+                    {
+                        t = TransitionType.Any;
+                    }
+                    else if(input[i] == '1')
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                    number = new StringBuilder();
+                    while (i != ':')
+                    {
+                        number.Append(input[i]);
+                        i++;
+                    }
+                    Node e = nodes[int.Parse(number.ToString())];
+                    n.Transitions.Add(t);
+                }
+            }
         }
     }
 }

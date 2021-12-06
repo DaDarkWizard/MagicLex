@@ -6,7 +6,7 @@
 %begin
 
 [int] : { return Types.INT; }
-["()"]
-[([a-zA-Z])([a-zA-Z0-9])*]
+["((([#-Z^-~])|(\\"|\r|\n|\t|\[|\]))*)"] : { return Types.STRING; }
+[([a-zA-Z])(([a-zA-Z0-9])*)] : { return Types.IDENTIFIER; }
 
 %end
