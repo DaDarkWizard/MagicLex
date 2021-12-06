@@ -26,6 +26,12 @@ namespace LanguageProcessing.Parser
             Length = text.Length;
         }
 
+        public FileParser(string text)
+        {
+            this.text = text;
+            this.Length = text.Length;
+        }
+
         public int Peek()
         {
             return position < text.Length ? text[position] : -1;
