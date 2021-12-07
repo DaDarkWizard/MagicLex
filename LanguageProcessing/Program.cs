@@ -1,5 +1,6 @@
-﻿using LanguageProcessing.Expression;
-using LanguageProcessing.Parser;
+﻿using Dasker.LanguageProcessing.LexerDependencies.Expression;
+using Dasker.LanguageProcessing.LexerDependencies.Parser;
+using Dasker.LanguageProcessing.ScannerMaker;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,14 @@ namespace LanguageProcessing
             Lex lex = new Lex();
 
             lex.Usings = WriteAllSections("usings", input);
+
+            string? property = ScanProperty("return", input);
+            if (property != null) lex.lexType = property;
+            property = ScanProperty("errortype", input);
+            if (property != null) lex.errorValue = property;
+            property = ScanProperty("endtype", input);
+            if (property != null) lex.endValue = property;
+
             input.Seek(0, SeekOrigin.Begin);
             ScanUntil("begin", input);
             lex.DFAS = new List<DFA>();
@@ -31,6 +40,8 @@ namespace LanguageProcessing
             int endIndex = input.Position - 4;
             input.Position = beginIndex;
             SkipWhiteSpace(input);
+
+            
 
             while (input.Position < endIndex)
             {
@@ -49,6 +60,36 @@ namespace LanguageProcessing
 
             lex.WriteToFile("MagicLex.cs");
             //output.Dispose();*
+
+        }
+
+        public static string? ScanProperty(string delimiter, FileParser input)
+        {
+            input.Position = 0;
+            ScanUntil(delimiter, input);
+            int i = input.Read();
+            while(i > -1 && (char)i != '{')
+            {
+                i = input.Read();
+            }
+            int brace = 1;
+            StringBuilder output = new StringBuilder();
+            while(brace > 0)
+            {
+                i = input.Read();
+                if(i < 0)
+                {
+                    return null;
+                }
+                if ((char)i == '{') brace++;
+                else if ((char)i == '}') brace--;
+                if(brace == 0)
+                {
+                    return output.ToString();
+                }
+                output.Append((char)i);
+            }
+            return output.ToString();
         }
 
         public static void ScanUntil(string delimiter, FileParser inputFile)
@@ -87,6 +128,10 @@ namespace LanguageProcessing
                 if (text == delimiter)
                 {
                     return;
+                }
+                else
+                {
+                    inputFile.Position -= delimiter.Length;
                 }
             }
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LanguageProcessing.Parser
+namespace TestProject
 {
     public enum Types
     {
@@ -18,6 +18,8 @@ namespace LanguageProcessing.Parser
         Equal,
         LParen,
         RParen,
-        INT
+        INT,
+        IDENTIFIER,
+        Whitespace
     }
 }

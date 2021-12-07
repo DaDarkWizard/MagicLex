@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LanguageProcessing.Expression
+namespace Dasker.LanguageProcessing.LexerDependencies.Expression
 {
     public class DFA
     {
@@ -528,6 +528,7 @@ namespace LanguageProcessing.Expression
                 }
                 builder.Append("]");
             }
+            builder.Append("]");
 
             return builder.ToString();
         }
@@ -560,38 +561,49 @@ namespace LanguageProcessing.Expression
                     number.Append(input[i]);
                     i++;
                 }
-                Node n = nodes[int.Parse(number.ToString())];
+                Node n = nodes[int.Parse(number.ToString()) - 1];
                 i+=2;
                 while (input[i] != ']')
                 {
                     i++;
-                    
-                    i++;
-                    TransitionType t;
+                    char? type;
                     char? one;
                     char? two;
-                    if(input[i] == '0')
-                    {
-                        t = TransitionType.Any;
-                    }
-                    else if(input[i] == '1')
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
+                    type = input[i];
+                    i += 2;
                     number = new StringBuilder();
-                    while (i != ':')
+                    while (input[i] != ':')
                     {
                         number.Append(input[i]);
                         i++;
                     }
-                    Node e = nodes[int.Parse(number.ToString())];
+                    Node e = nodes[int.Parse(number.ToString()) - 1];
+                    Transition t;
+                    i++;
+                    if(type == '0')
+                    {
+                        t = new Transition(TransitionType.Any, e);
+                    }
+                    else if (type == '1')
+                    {
+                        t = new Transition(TransitionType.Character, e);
+                        t.Character = input[i];
+                        i++;
+                    }
+                    else
+                    {
+                        t = new Transition(TransitionType.Range, e);
+                        t.Character = input[i];
+                        t.Character2 = input[i + 1];
+                        i += 2;
+                    }
                     n.Transitions.Add(t);
+                    i++;
                 }
+                i++;
             }
+            First = nodes[0];
+            current = First;
         }
     }
 }

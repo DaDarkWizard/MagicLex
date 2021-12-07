@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LanguageProcessing.Expression
+namespace Dasker.LanguageProcessing.LexerDependencies.Expression
 {
     /// <summary>
     /// Transition for a parsing rule.

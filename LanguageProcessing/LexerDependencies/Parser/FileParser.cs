@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace LanguageProcessing.Parser
+namespace Dasker.LanguageProcessing.LexerDependencies.Parser
 {
     public class FileParser
     {
