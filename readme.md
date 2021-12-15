@@ -9,4 +9,4 @@ Some of the files need to be rearranged for better organization, but the basics 
 
 Regexes currently have a rudamentary implementation. All possibilities are as follows:
 
-**:
+*: Ku
