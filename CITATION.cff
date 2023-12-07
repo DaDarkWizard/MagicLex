@@ -1,0 +1,57 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: MagicLex
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Daniel
+    family-names: Masker
+    email: dtmasker@mtu.edu
+    affiliation: Michigan Technological University
+    orcid: 'https://orcid.org/0009-0009-3662-8354'
+repository-code: 'https://github.com/DaDarkWizard/MagicLex'
+abstract: >-
+  MagicLex is a self-contained lexer generator for C#. In
+  any computer-based consumption of human-readable text, a
+  lexer plays a key role. A lexer is a program that uses
+  regular expressions to tokenize text. A lexer generator is
+  a program that, given a domain-defined specification for a
+  lexer, generates that lexer.
+
+  Flex is one such example of a lexer generator, built for
+  C++. What sets Flex apart from other lexer generators is
+  how it generates a self-contained lexer. In other words,
+  once the lexer has been generated flex is no longer
+  needed.
+
+  While there are many lexer generators available for C\#,
+  there are none that generate a self-contained lexer. They
+  all require the library used to generate the lexer to be
+  available in the final project. Using a library may be
+  difficult in scenarios where the project is offline.
+  MagicLex seeks to fill this gap.
+
+  MagicLex takes a specification similar to that of Flex.
+  After parsing through any configuration options, it
+  converts the provided RegEx into a minimized DFA, then
+  embeds the DFA and matching code into a source file. Using
+  language features available in C\#, it's able to create a
+  single source file without having a confusing or polluted
+  namespace. The resulting source file is also readable
+  enough that modifications can be made to token matching
+  code without regenerating the file.
+
+  While MagicLex is intended for use as a tokenizer, the
+  freedom provided in the specification allows any type of
+  complex object or tuple to be returned on a match.
+keywords:
+  - lexer
+  - lexer generator
+  - computer science
+  - programming languages
+  - finite state automota
+license: MIT
